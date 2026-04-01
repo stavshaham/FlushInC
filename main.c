@@ -1,7 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "auth.h"
 
 int main() {
+
+    srand(time(NULL));
+
     /* Prompt the user for login/register */
     int choice = 0;
     int running = 1;

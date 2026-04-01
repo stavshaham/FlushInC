@@ -7,6 +7,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "home.h"
+#include "utils.h"
 
 /*
     Function: getGameScreen
@@ -26,4 +28,18 @@ int getHomeScreen() {
     printf(" - Play a game (1) \n"); 
     printf(" - See stats (2) \n"); 
     printf(" - Exit (3) \n"); 
+    
+    while (scanf("%d", &choice) <= 0 || choice < 1 || choice > 3) {
+        clearBuffer();
+        printf("Please enter a valid number: \n");
+        printf(" - Play a game (1) \n"); 
+        printf(" - See stats (2) \n"); 
+        printf(" - Exit (3) \n");
+    }
+
+    clearBuffer();
+
+    return choice;
 }
+
+

@@ -14,10 +14,6 @@
 #define SUITS 4
 #define VALUES 13
 
-int main() {
-    return EXIT_SUCCESS;
-}
-
 /*
     Function: generateDeck
     Purpose: This function generates a new deck
@@ -56,3 +52,44 @@ Card* generateDeck() {
 
     return cards
 }
+
+/*
+    Function: shuffleDeck
+    Purpose: This function shuffles the current deck
+
+    Arguments:
+        deck - an array of cards
+        size - the size of the array
+    
+    Returns:
+        None
+*/
+
+void shuffleDeck(Card* deck, int size) {
+    int i = 0;
+    for (i = size - 1; i > 0; i++) {
+        int j = rand() % (i + 1);
+
+        Card temp = deck[i];
+        deck[i] = deck[j];
+        deck[j] = temp;
+    }
+}
+
+/*
+    Function: dealCard
+    Purpose: This function shuffles the current deck
+
+    Arguments:
+        deck - an array of cards
+        size - the size of the array
+    
+    Returns:
+        Card
+*/
+
+Card dealCard(Card* deck, int* top) {
+    return deck[(*top)++];
+}
+
+

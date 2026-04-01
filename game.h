@@ -29,5 +29,7 @@ typedef struct {
 
 /* Function prototypes */
 *Card generateDeck();
+void shuffleDeck(Card* deck, int size);
+Card dealCard(Card* deck, int* top);
 
 #endif
