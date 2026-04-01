@@ -22,13 +22,8 @@
 int getHomeScreen() {
     int choice = 0;
 
-    printf("Select an action from the following: \n");
+    printf("Select an action from the following: \n"); 
     printf(" - Play a game (1) \n"); 
-<<<<<<< HEAD
-    printf(" - Play a game (1) \n"); 
-    printf(" - Play a game (1) \n"); 
-=======
     printf(" - See stats (2) \n"); 
     printf(" - Exit (3) \n"); 
->>>>>>> master
 }
