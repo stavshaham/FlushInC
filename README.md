@@ -66,15 +66,25 @@ q → Quit
 ## 📁 Project Structure
 
 poker-terminal-game/
+
 │── main.c
+
 │── deck.c
+
 │── deck.h
+
 │── player.c
+
 │── player.h
+
 │── game.c
+
 │── game.h
+
 │── utils.c
+
 │── utils.h
+
 └── README.md
 
 
