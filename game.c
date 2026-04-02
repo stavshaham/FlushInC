@@ -63,12 +63,14 @@ void generateDeck(Card* cards, int size) {
 void shuffleDeck(Card* deck, int size) {
     int i = 0;
     for (i = size - 1; i > 0; i--) {
-        printf("i = %d \n", i);
         int j = rand() % (i + 1);
 
         Card temp = deck[i];
         deck[i] = deck[j];
         deck[j] = temp;
+        
+        printf("Card details: %d %s \n", deck[i].value, deck[i].suit);
+
     }
 }
 

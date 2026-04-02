@@ -36,13 +36,13 @@ void generateDeck(Card* cards, int size) {
                 cards[i].suit = "Diamonds";
                 break;
             case 1:
-                cards[i].suit = "Hearts");
+                cards[i].suit = "Hearts";
                 break;
             case 2:
-                cards[i].suit = "Clubs");
+                cards[i].suit = "Clubs";
                 break;
             case 3:
-                cards[i].suit = "Spades");
+                cards[i].suit = "Spades";
                 break;
         }
     }
@@ -63,7 +63,7 @@ void generateDeck(Card* cards, int size) {
 void shuffleDeck(Card* deck, int size) {
     int i = 0;
     for (i = size - 1; i > 0; i--) {
-        printf("i = %d \n", i);
+        printf("Card details: %d %s \n", deck[i].value, deck[i].suit);
         int j = rand() % (i + 1);
 
         Card temp = deck[i];
