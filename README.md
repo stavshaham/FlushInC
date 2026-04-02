@@ -1,8 +1,8 @@
-# í ¼í³ Poker Terminal Game (C)
+# ğŸƒ Poker Terminal Game (C)
 
 A simple command-line poker game written in C. Play directly in your terminal while learning and exploring core concepts like game logic, structs, and memory management.
 
-## í ¼í¾® Features
+## ğŸ® Features
 
 - Terminal-based gameplay (no GUI required)
 - Standard 52-card deck
@@ -11,21 +11,20 @@ A simple command-line poker game written in C. Play directly in your terminal wh
 - Lightweight and fast
 - Written in pure C (no external libraries)
 
-## í ½í» ï¸ Tech Stack
+## ğŸ› ï¸ Tech Stack
 
 - Language: C
 - Compiler: GCC (or any C-compatible compiler)
 - Platform: Cross-platform (Linux, macOS, Windows with MinGW)
 
-## í ½íº€ Getting Started
+## ğŸš€ Getting Started
 
-### 1. Clone the repository
+**### 1. Clone the repository**
 ```bash
 git clone https://github.com/your-username/poker-terminal-game.git
 cd poker-terminal-game
 
-### 2. Compile the program
-
+**### 2. Compile the program**
 If you have a single file:
 ```bash
 gcc main.c deck.c player.c game.c utils.c -o poker
@@ -34,63 +33,34 @@ gcc main.c deck.c player.c game.c utils.c -o poker
 ```bash
 ./poker
 
-
-
-## How to play:
-
+## ğŸ² How to play:
 1. Run the program
-
 2. Each player is dealt cards
-
 3. Follow on-screen prompts to:
-
   Bet
-
   Check
-
   Fold
-
 4. The game evaluates hands and determines the winner
 
-
-
-## í ¼í³ Hand Rankings (Highest â†’ Lowest)
-
+## ğŸƒ Hand Rankings (Highest â†’ Lowest)
 1. Royal Flush
-
 2. Straight Flush
-
 3. Four of a Kind
-
 4. Full House
-
 5. Flush
-
 6. Straight
-
 7. Three of a Kind
-
 8. Two Pair
-
 9. One Pair
-
 10. High Card
 
-
-
-## í ¼í¾® Controls
-
+## ğŸ® Controls
 b â†’ Bet
-
 c â†’ Check
-
 f â†’ Fold
-
 q â†’ Quit
 
-
-
-## í ½í³ Project Structure
+## ğŸ“ Project Structure
 
 poker-terminal-game/
 â”‚â”€â”€ main.c
@@ -106,36 +76,23 @@ poker-terminal-game/
 
 
 
-## í ½í´§ Future Improvements
-
+## ğŸ”§ Future Improvements
 Add AI opponents
-
 Implement chip/betting system
-
 Multiplayer support
-
 Improve terminal UI
-
 Add input validation and error handling
 
-
-
-##í ½í°› Known Issues
-
+##ğŸ› Known Issues
 No advanced betting logic (yet)
-
 Limited input validation
 
-## í ¾í´ Contributing
-
-
-
+## ğŸ¤ Contributing
 Contributions are welcome! Feel free to fork the repo and submit a pull request.
 
-## í ½í³œ License
-
+## ğŸ“œ License
 This project is licensed under the MIT License.
 
-í ½í¹Œ Acknowledgments
+## ğŸ™Œ Acknowledgments
 Inspired by classic poker games
 Built as a learning project for C programming
