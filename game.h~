@@ -32,5 +32,6 @@ typedef struct {
 void generateDeck(Card* cards);
 void shuffleDeck(Card* deck, int size);
 Card dealCard(Card* deck, int* top);
+void startGame();
 
 #endif

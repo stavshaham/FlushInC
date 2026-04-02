@@ -56,6 +56,3 @@ int getHomeScreen() {
 
     return choice;
 }
-
-
-≈

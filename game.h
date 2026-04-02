@@ -29,7 +29,7 @@ typedef struct {
 } Table;
 
 /* Function prototypes */
-void generateDeck(Card* cards);
+void generateDeck(Card* cards, int size);
 void shuffleDeck(Card* deck, int size);
 Card dealCard(Card* deck, int* top);
 void startGame();
