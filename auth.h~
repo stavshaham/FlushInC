@@ -13,7 +13,7 @@
 typedef struct {
     char username[SIZE];
     int chips;
-} User;
+}
 
 /* Function prototypes */
 int getAuthType();

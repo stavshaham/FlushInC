@@ -1,6 +1,6 @@
 /*
     File: auth.c
-    Author: Stav Shaham, Braian Halas, Dharm Barot
+    Author: Stav Shaham
     Purpose: Access all auth function on a different file.
              Part of CS125 Final Project
     Date: 03/06/2026

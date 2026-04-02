@@ -29,8 +29,8 @@ void generateDeck(Card* cards) {
     int i = 0;
 
     for (i = 1; i <= VALUES * SUITS; i++) {
-        cards[i - 1].value = (i % 13) + 1;
-        switch (i / 13) {
+        cards[i - 1].value = (i - 1) % 13;
+        switch ((i - 1) / 13) {
             case 0:
                 cards[i - 1].suit = "Diamonds";
                 break;

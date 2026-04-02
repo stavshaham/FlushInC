@@ -20,7 +20,7 @@ int main() {
                 nextAction = loginUser();
                 if (nextAction == 1) {
                     int nextAction = getHomeScreen();
-                    if (nextAction == 3) {
+                    if (getAction == 3) {
                         running = 0;
                         printf("Exiting program. Goodbye. \n");
                         break;

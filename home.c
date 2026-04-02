@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "home.h"
+#include "game.h"
 #include "utils.h"
 
 /*
@@ -39,7 +40,22 @@ int getHomeScreen() {
 
     clearBuffer();
 
+    switch (choice) {
+        case 1: 
+            startGame();
+            break;
+
+        case 2:
+            /* showStats(); */
+            break;
+
+        case 3:
+            system("exit");
+            break;
+    }
+
     return choice;
 }
 
 
+≈
