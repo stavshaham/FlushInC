@@ -23,11 +23,13 @@ A simple command-line poker game written in C. Play directly in your terminal wh
 ```bash
 git clone https://github.com/your-username/poker-terminal-game.git
 cd poker-terminal-game
+```
 
 **### 2. Compile the program**
 If you have a single file:
 ```bash
 gcc main.c deck.c player.c game.c utils.c -o poker
+```
 
 ### 3. Run the game
 ```bash
