@@ -34,6 +34,7 @@ gcc main.c deck.c player.c game.c utils.c -o poker
 ### 3. Run the game
 ```bash
 ./poker
+```
 
 ## 🎲 How to play:
 1. Run the program
