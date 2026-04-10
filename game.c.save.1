@@ -1,0 +1,463 @@
+/*
+    File: game.c
+    Author: Stav Shaham, Braian Halas, Dharm Barot
+    Purpose: template file
+    Date: 03/12/2026
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "game.h"
+#include "card.h"
+#include "utils.h"
+
+/* Generate a standard 52-card deck */
+void generateDeck(Card* cards, int size) {
+    int i = 0;
+    for (i = 0; i < size; i++) {
+        cards[i].value = (i % 13) + 1;
+        switch (i / 13){
+            case 0: 
+                cards[i].suit = "Diamonds"; 
+                break;
+            case 1: 
+                cards[i].suit = "Hearts"; 
+                break;
+            case 2: 
+                cards[i].suit = "Clubs"; 
+                break;
+            case 3: 
+                cards[i].suit = "Spades"; 
+                break;
+        }
+    }
+}
+
+/* Shuffle deck using Fisher-Yates */
+void shuffleDeck(Card* deck, int size){
+    int i = 0;
+    int j = 0;
+    for (i = size - 1; i > 0; i--){
+        j = rand() % (i + 1);
+        Card tmp = deck[i];
+        deck[i] = deck[j];
+        deck[j] = tmp;
+    }
+}
+
+/* Deal one card from the deck */
+Card dealCard(Card* deck, int* top) {
+    return deck[(*top)++];
+}
+
+/* Display player's hand */
+void showHand(GamePlayer *player) {
+    int i = 0;
+
+    printf("Your hand: ");
+    for (i = 0; i < 2; i++) {
+        printf("%d of %s ", player->hand[i].value, player->hand[i].suit);
+    }
+
+    printf("\n");
+}
+
+/* Simple AI betting logic: fold/call/random raise */
+int aiBet(GamePlayer *ai, int highestBet) {
+    if (ai->chips <= 0) {
+        return 0;
+    }
+
+    int action = rand() % 3; // 0=fold,1=call,2=raise
+    int bet = 0;
+
+    if(action == 0) { // fold
+        ai->is_folded = 1;
+        printf("AI folds.\n");
+
+        return 0;
+    } else if (action == 1) { // call
+        bet = highestBet - ai->current_bet;
+
+        if (bet > ai->chips) {
+            bet=ai->chips;
+        }
+
+        ai->chips -= bet;
+        ai->current_bet += bet;
+
+        printf("AI calls %d.\n", bet);
+
+        return bet;
+    } else { // raise
+        bet = (rand() % 50) + 10;
+
+        if(bet + ai->current_bet < highestBet) {
+            bet = highestBet - ai->current_bet;
+        }
+
+        if(bet > ai->chips) {
+            bet = ai->chips;
+        }
+
+        ai->chips -= bet;
+        ai->current_bet += bet;
+
+        printf("AI raises %d.\n", bet);
+
+        return bet;
+    }
+}
+
+/* Get human player's bet */
+int humanBet(GamePlayer *player, int highestBet) {
+    int bet = 0;
+    int choice = 0;
+
+    if (player->chips <= 0) {
+        return 0;
+    }
+
+    printf("Your chips: %d | Highest bet: %d | Your current bet: %d\n", player->chips, highestBet, player->current_bet);
+    printf("Do you want to (1) Call, (2) Raise, (3) Fold? ");
+
+    scanf("%d",&choice);
+    clearBuffer();
+
+    switch(choice){
+        case 1: // Call
+            bet = highestBet - player->current_bet;
+
+            if (bet > player->chips) {
+                bet=player->chips;
+            }
+
+            player->chips -= bet;
+            player->current_bet += bet;
+
+            printf("You call %d.\n", bet);
+            break;
+        case 2: // Raise
+            printf("Enter raise amount: ");
+
+            scanf("%d",&bet);
+            clearBuffer();
+
+            bet += highestBet - player->current_bet;
+
+            if (bet>player->chips) {
+                bet=player->chips;
+            }
+
+            player->chips -= bet;
+            player->current_bet += bet;
+
+            printf("You raise %d.\n", bet);
+            break;
+        case 3: // Fold
+            player->is_folded = 1;
+            bet = 0;
+
+            printf("You fold.\n");
+            break;
+        default:
+            printf("Invalid choice. Folding.\n");
+
+            player->is_folded = 1;
+            bet = 0;
+
+            break;
+    }
+
+    return bet;
+}
+
+/* Betting round */
+int bettingRound(GamePlayer players[], int *pot){
+    int highestBet = 0;
+    int totalBets = 0;
+    int i = 0;
+
+    // Reset current bets
+    for (i = 0; i < MAX_PLAYERS; i++) {
+        players[i].current_bet = 0;
+    }
+
+    for (i = 0; i < MAX_PLAYERS; i++){
+        if (players[i].is_folded) {
+             continue;
+        }
+
+        int bet = 0;
+        if (players[i].is_human) {
+            bet = humanBet(&players[i], highestBet);
+        } else {
+            bet = aiBet(&players[i], highestBet);
+        }
+
+        if(players[i].current_bet > highestBet) {
+            highestBet = players[i].current_bet;
+        }
+
+        totalBets+=bet;
+    }
+
+    *pot += totalBets;
+
+    printf("Total pot: %d\n", *pot);
+    return highestBet;
+}
+
+/* Start a full Texas Hold'em game round */
+void startGame(GamePlayer players[]) {
+    Card deck[TABLE_CARDS];
+    int top = 0;
+    int i = 0;
+    int p = 0;
+    Table table;
+
+    srand(time(NULL));
+
+    // Get blinds from human
+    printf("Enter small blind: ");
+    scanf("%d",&table.small_blind);
+    clearBuffer();
+
+    printf("Enter big blind: ");
+    scanf("%d",&table.big_blind);
+    clearBuffer();
+
+    // Deduct blinds
+    players[0].chips -= table.small_blind;
+    players[1].chips -= table.big_blind;
+    players[0].current_bet = table.small_blind;
+    players[1].current_bet = table.big_blind;
+    table.pot = table.small_blind + table.big_blind;
+
+    // Generate deck
+    printf("Generating cards... \n");
+    generateDeck(deck, TABLE_CARDS);
+    printf("Shuffeling deck... \n");
+    shuffleDeck(deck, TABLE_CARDS);
+
+    // Deal hole cards
+    for (i = 0; i < PLAYER_CARDS; i++) {
+        for (p = 0; p < MAX_PLAYERS; p++) {
+            players[p].hand[i] = dealCard(deck,&top);
+        }
+    }
+
+    showHand(&players[0]);
+
+    // Pre-flop betting
+    printf("\n--- Pre-flop betting ---\n");
+
+    bettingRound(players, &table.pot);
+
+    // Deal Flop
+    printf("\n--- Flop ---\n");
+
+    for (i = 0; i < 3; i++) {
+        table.community[i] = dealCard(deck,&top);
+    }
+
+    for(i = 0; i < 3; i++) {
+         printf("%d of %s ", table.community[i].value, table.community[i].suit);
+    }
+
+    printf("\n");
+    bettingRound(players, &table.pot);
+
+    // Deal Turn
+    printf("\n--- Turn ---\n");
+
+    table.community[3] = dealCard(deck,&top);
+    printf("%d of %s\n", table.community[3].value, table.community[3].suit);
+    bettingRound(players, &table.pot);
+
+    // Deal River
+    printf("\n--- River ---\n");
+
+    table.community[4]=dealCard(deck,&top);
+    printf("%d of %s\n", table.community[4].value, table.community[4].suit);
+    bettingRound(players, &table.pot);
+
+    // TODO: Winner determination (currently highest card)
+    int winner = evaluateHands(players, MAX_PLAYERS, table.community);
+
+    printf("\nWinner is player %d!\n", winner + 1);
+    players[winner].chips += table.pot;
+
+    // Update human profile if human won
+    if (players[winner].is_human) {
+        players[winner].profile->total_chips = players[winner].chips;
+        players[winner].profile->wins += 1;
+    } else {
+        players[winner].profile->losses += 1;
+    }
+
+    saveProfile(players[0].profile);
+
+}
+
+HandValue rankHand(Card hand[2], Card community[5]) {
+    Card all[7];
+    int i = 0, s = 0, v = 0, c = 0;
+    int valueCounts[14];
+    int suitCounts[4];
+    char suits[10][4] = {"Diamonds", "Hearts", "Clubs", "Spades"};
+    char flushSuit = 0;
+    int sortedValues[7];
+    int idx = 0;
+    int pairs=0, threes=0, fours=0;
+    int pairVals[2] = {0,0};
+    int threeVal=0, fourVal=0;
+    HandValue hv = {HIGH_CARD, {0,0,0,0,0}};
+
+    for (i = 0; i < 2; i++) {
+        all[i] = hand[i];
+    }
+
+    for (i = 0; i < 5; i++) {
+        all[i + 2] = community[i];
+    }
+
+    for (i = 0; i < 7; i++) {
+        valueCounts[all[i].value]++;
+        switch (all[i].suit) {
+            case "Diamonds":
+                suitCounts[0]++; 
+                break;
+            case "Hearts": 
+                suitCounts[1]++; 
+                break;
+            case "Clubs": 
+                suitCounts[2]++; 
+                break;
+            case "Spades": 
+                suitCounts[3]++; 
+                break;
+        }
+    }
+
+    // Detect flush suit
+    for (s = 0; s < 4; s++) {
+        if (suitCounts[s] >= 5) {
+            flushSuit = suits[s];
+        }
+    }
+    // Collect sorted card values descending
+    for (v = 13; v >= 1; v--) {
+        for (c = 0; c < valueCounts[v]; c++) {
+            sortedValues[idx++] = v;
+        }
+    }
+
+    for (v = 13; v >= 1; v--){
+        if (valueCounts[v]==4) {
+            fours = 1; 
+            fourVal = v; 
+        }
+
+        if (valueCounts[v]==3) { 
+            threes = 1; 
+            threeVal = v; 
+        }
+
+        if (valueCounts[v] == 2) {
+            if (pairVals[0] == 0) {
+                pairVals[0] = v;
+            } else {
+                pairVals[1] = v;
+            }
+            pairs++;
+        }
+    }
+
+    // Check straight
+    int straightHigh=0;
+    for(int start=13; start>=5; start--){
+        int count=0;
+        for(int j=start;j>start-5;j--){
+            if(valueCounts[j]>0) count++;
+        }
+        if(count==5){
+            straightHigh=start;
+            break;
+        }
+    }
+
+    // Determine hand type
+    if(fours){
+        hv.rank = FOUR_OF_A_KIND;
+        hv.tiebreak[0]=fourVal;
+        // kicker
+        for(int i=0;i<7;i++){
+            if(all[i].value != fourVal){ hv.tiebreak[1]=all[i].value; break; }
+        }
+    } else if(threes && pairs){
+        hv.rank = FULL_HOUSE;
+        hv.tiebreak[0]=threeVal;
+        hv.tiebreak[1]=pairVals[0];
+    } else if(flushSuit){
+        hv.rank = FLUSH;
+        idx=0;
+        for(int i=13;i>=1;i--){
+            for(int j=0;j<7;j++){
+                if(all[j].value==i && all[j].suit[0]==flushSuit && idx<5) hv.tiebreak[idx++]=i;
+            }
+        }
+    } else if(straightHigh){
+        hv.rank = STRAIGHT;
+        hv.tiebreak[0]=straightHigh;
+    } else if(threes){
+        hv.rank = THREE_OF_A_KIND;
+        hv.tiebreak[0]=threeVal;
+        idx=1;
+        for(int i=0;i<7 && idx<3;i++){
+            if(all[i].value != threeVal) hv.tiebreak[idx++]=all[i].value;
+        }
+    } else if(pairs>=2){
+        hv.rank = TWO_PAIR;
+        hv.tiebreak[0]=pairVals[0];
+        hv.tiebreak[1]=pairVals[1];
+        for(int i=0;i<7;i++){
+            if(all[i].value != pairVals[0] && all[i].value != pairVals[1]){
+                hv.tiebreak[2]=all[i].value; break;
+            }
+        }
+    } else if(pairs==1){
+        hv.rank = ONE_PAIR;
+        hv.tiebreak[0]=pairVals[0];
+        idx=1;
+        for(int i=0;i<7 && idx<4;i++){
+            if(all[i].value != pairVals[0]) hv.tiebreak[idx++]=all[i].value;
+        }
+    } else{
+        hv.rank = HIGH_CARD;
+        for(int i=0;i<5;i++) hv.tiebreak[i]=sortedValues[i];
+    }
+
+    return hv;
+}
+
+// Evaluate all players and return the index of the winner
+int evaluateHands(GamePlayer players[], int numPlayers, Card community[5]){
+    int bestRank = 0;
+    int winner = 0;
+    int i = 0;
+
+    for (i = 0; i < numPlayers; i++){
+        if (players[i].is_folded) {
+            continue;
+        }
+
+        int rank = rankHand(players[i].hand, community);
+        if (rank > bestRank) {
+            bestRank = rank;
+            winner = i;
+        }
+    }
+
+    return winner;
+}

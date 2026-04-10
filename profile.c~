@@ -1,0 +1,87 @@
+/*
+    File: profile.c
+    Author: Braian Halas, Dharm Barot
+    Purpose: Implements functions for loading and saving persistent user profiles
+    Date: 04/08/2026
+*/
+
+#include <stdio.h>
+#include <string.h>
+#include "profile.h"
+
+/* 
+    Function: loadProfile
+    Purpose: Loads the user profile from user_data.txt into the profile struct
+    Arguments:
+        profile - pointer to UserProfile to load data into
+    Returns:
+        void
+*/
+
+void loadProfile(UserProfile* profile, char* username) {
+    FILE *f = fopen("user_data.txt","r");
+    if (!f) return;
+
+    char uname[MAX_NAME];
+    int chips;
+    int wins; 
+    int losses;
+
+    while(fscanf(f,"%s %d %d %d", uname, &chips, &wins, &losses) == 4) {
+        if(strcmp(uname, username) == 0) {
+            strcpy(profile->username, username);
+            profile->total_chips = chips;
+            profile->wins = wins;
+            profile->losses = losses;
+            break;
+        }
+    }
+
+    fclose(f);
+}
+
+/* 
+    Function: saveProfile
+    Purpose: Appends the current profile data to user_data.txt
+    Arguments:
+        profile - pointer to UserProfile to save
+    Returns:
+        void
+*/
+
+void saveProfile(UserProfile *profile) {
+    int i = 0;
+    FILE *f = fopen("user_data.txt", "r+"); // open for reading and writing
+    if (!f) {
+        // If file doesn't exist, create it
+        f = fopen("user_data.txt", "w");
+        if (!f) return;
+        fprintf(f, "%s %d %d %d\n", profile->username, profile->total_chips, profile->wins, profile->losses);
+        fclose(f);
+        return;
+    }
+
+    // Read all lines into memory
+    char lines[100][100]; // assuming max 100 users, 100 chars per line
+    int count = 0;
+    char uname[MAX_NAME];
+    int chips, wins, losses;
+
+    while (fscanf(f, "%s %d %d %d", uname, &chips, &wins, &losses) == 4) {
+        if (strcmp(uname, profile->username) == 0) {
+            // Update the line
+            snprintf(lines[count], 100, "%s %d %d %d", profile->username, profile->total_chips, profile->wins, profile->losses);
+        } else {
+            snprintf(lines[count], 100, "%s %d %d %d", uname, chips, wins, losses);
+        }
+        count++;
+    }
+
+    // Move back to start of file
+    freopen(NULL, "w", f); // reset file for writing
+    for (i = 0; i < count; i++) {
+        fprintf(f, "%s\n", lines[i]);
+    }
+
+    fclose(f);
+}
