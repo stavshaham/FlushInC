@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "auth.h"
 #include "utils.h"
 
@@ -36,7 +37,7 @@ int getAuthType() {
     return choice;
 }
 
-int loginUser() {
+int loginUser(char* user) {
     /* TODO: check if username exists, if so check if it fits the password, return 1 if success, return 0 if failed. */
     char username_input[SIZE];
     char password_input[SIZE];
@@ -75,6 +76,7 @@ int loginUser() {
         if (equalsStrings(username, username_input)) {
             if (equalsStrings(password, password_input)) {
                 fclose(f);
+                strcpy(user, username);
                 printf("Login successfully \n");
                 return 1;
             } else {
@@ -141,7 +143,7 @@ int registerUser() {
     }
     
     /* Format: username chips hands_won hands_lost */
-    fprintf(f, "%s %d %d %d", username_input, 10000, 0, 0);
+    fprintf(f, "%s %d %d %d\n", username_input, 10000, 0, 0);
     fclose(f);
 
     return 1;

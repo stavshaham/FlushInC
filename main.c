@@ -3,6 +3,7 @@
 #include <time.h>
 #include "auth.h"
 #include "home.h"
+#include "profile.h"
 
 int main() {
 
@@ -12,14 +13,17 @@ int main() {
     int choice = 0;
     int running = 1;
     int nextAction = 0;
+    char username[MAX_NAME];
+    UserProfile user;
 
     while (running) {
         choice = getAuthType();
         switch(choice) {
             case 1:
-                nextAction = loginUser();
+                nextAction = loginUser(username);
+                loadProfile(&user, username);
                 if (nextAction == 1) {
-                    int nextAction = getHomeScreen();
+                    nextAction = getHomeScreen(&user);
                     if (nextAction == 3) {
                         running = 0;
                         printf("Exiting program. Goodbye. \n");
@@ -39,5 +43,5 @@ int main() {
         printf("\n");
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

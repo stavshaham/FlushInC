@@ -1,0 +1,42 @@
+/*
+    File: profile.h
+    Author: Braian Halas, Dharm Barot
+    Purpose: Stores persistent user profile information (chips, wins, losses)
+    Date: 04/08/2026
+*/
+
+#ifndef PROFILE_H
+#define PROFILE_H
+
+#define MAX_NAME 50
+
+typedef struct {
+    char username[MAX_NAME];
+    int total_chips;
+    int wins;
+    int losses;
+} UserProfile;
+
+/* 
+    Function: loadProfile
+    Purpose: Loads the user profile from user_data.txt into the profile struct
+    Arguments:
+        profile - pointer to UserProfile to load data into
+    Returns:
+        void
+*/
+
+void loadProfile(UserProfile *profile);
+
+/* 
+    Function: saveProfile
+    Purpose: Appends the current profile data to user_data.txt
+    Arguments:
+        profile - pointer to UserProfile to save
+    Returns:
+        void
+*/
+
+void saveProfile(UserProfile *profile);
+
+#endif

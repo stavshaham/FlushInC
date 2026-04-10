@@ -9,7 +9,44 @@
 #include <stdlib.h>
 #include "home.h"
 #include "game.h"
+#include "player.h"
 #include "utils.h"
+
+/*
+    Function: initializePlayers
+    Purpose: Creates an array of 5 players (1 human, 4 AI) and initializes their chips and status
+
+    Arguments:
+        human - User struct for the human player
+    
+    Returns:
+        None (modifies the players array)
+*/
+
+void initializePlayers(GamePlayer players[], UserProfile* human) {
+    printf("Initializing players...\n");
+    int i = 0;
+    for (i = 0; i < MAX_PLAYERS; i++) {
+        printf("%d\n", i);
+        if (i == 0) {
+            // First player is human
+            printf("%d\n", human->total_chips);
+            players[i].is_human = 1;
+            players[i].is_folded = 0;
+            players[i].chips = human->total_chips; // assign current chips
+            players[i].profile = human;      // link to user profile for updating stats
+        } else {
+            // AI players
+            players[i].is_human = 0;
+            players[i].is_folded = 0;
+            players[i].chips = 1000 + (rand() % 4000); // give AI random chips
+            players[i].profile = NULL; // no history tracking for AI
+        }
+        players[i].current_bet = 0;
+    }
+
+    printf("Done with initializing players \n");
+}
 
 /*
     Function: getGameScreen
@@ -22,40 +59,45 @@
         None
 */
 
-int getHomeScreen() {
+int getHomeScreen(UserProfile* human) {
     int choice = 0;
+    int running = 1;
 
-    printf("Select an action from the following: \n"); 
-    printf(" - Play a game (1) \n"); 
-    printf(" - See stats (2) \n"); 
-    printf(" - Exit (3) \n"); 
-    
-    while (scanf("%d", &choice) <= 0 || choice < 1 || choice > 3) {
-        clearBuffer();
-        printf("Please enter a valid number: \n");
+    while (running) {
+
+        printf("Select an action from the following: \n"); 
         printf(" - Play a game (1) \n"); 
         printf(" - See stats (2) \n"); 
-        printf(" - Exit (3) \n");
-    }
+        printf(" - Exit (3) \n"); 
+    
+        while (scanf("%d", &choice) <= 0 || choice < 1 || choice > 3) {
+            clearBuffer();
+            printf("Please enter a valid number: \n");
+            printf(" - Play a game (1) \n"); 
+            printf(" - See stats (2) \n"); 
+            printf(" - Exit (3) \n");
+        }
 
-    clearBuffer();
+        clearBuffer();
 
-    switch (choice) {
-        case 1: 
-            startGame();
-            break;
+        switch (choice) {
+            case 1:
+                ;
+                GamePlayer players[MAX_PLAYERS];
+                initializePlayers(players, human);
+                startGame(players);
+                break;
 
-        case 2:
-            /* showStats(); */
-            break;
+            case 2:
+                /* showStats(); */
+                break;
 
-        case 3:
-            system("exit");
-            break;
+            case 3:
+                printf("Back to main menu \n");
+                running = 0;
+                break;
+        }
     }
 
     return choice;
 }
-
-
-≈

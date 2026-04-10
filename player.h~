@@ -1,0 +1,22 @@
+/*
+    File: player.h
+    Authors: Braian Halas, Dharm Barot
+    Purpose: Header file for player.c
+    Date: 04/08/2026
+*/
+
+#ifndef PLAYER_H
+#define PLAYER_H
+
+#define MAX_NAME 20
+#define MAX_PLAYERS 5
+
+/*
+    Player struct
+    - name: the name of the player
+    - chips: the amount of chips the player has
+    - wins: the amount of wins the player has
+    - losses: the amount of losses the player has
+    - is_human: is the player human or AI?
+    - is
+*/
