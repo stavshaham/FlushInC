@@ -11,6 +11,7 @@
 #include "game.h"
 #include "player.h"
 #include "utils.h"
+#include "stats.c"
 
 /*
     Function: initializePlayers
@@ -53,10 +54,10 @@ void initializePlayers(GamePlayer players[], UserProfile* human) {
     Purpose: This function manages the users next choice after login, can be see his stats, or play a game, or exit
 
     Arguments:
-        arg1 - a
+        human - UserProfile struct
     
     Returns:
-        None
+        int - the result of the choice
 */
 
 int getHomeScreen(UserProfile* human) {
@@ -89,7 +90,7 @@ int getHomeScreen(UserProfile* human) {
                 break;
 
             case 2:
-                /* showStats(); */
+                showStats(human);
                 break;
 
             case 3:

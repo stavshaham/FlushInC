@@ -182,13 +182,14 @@ int compareHands(HandValue h1, HandValue h2);
         void
 */
 
-void showHand(GamePlayer *player);
+void showHand(GamePlayer *player, int i);
 
 /* 
     Function: getSuitSymbol
     Purpose: Gets the symbols of the cards
     Arguments:
         players - array of GamePlayer structs
+        i - the AI number
     Returns:
         char*
 */
@@ -232,5 +233,16 @@ int evaluateSimpleStrength(Card hand[2], Card community[5], int stage);
 */
 
 int evaluateSimpleStrength(Card hand[2], Card community[5], int stage);
+
+/* 
+    Function: getCardValueString
+    Purpose: Converts the number from a number to a string to use A/J/Q/K
+    Arguments:
+        value - the integer value of the card
+    Returns:
+        void
+*/
+
+const char* getCardValueString(int value);
 
 #endif
