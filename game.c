@@ -161,35 +161,31 @@ int humanBet(GamePlayer *player, int highestBet) {
 int bettingRound(GamePlayer players[], int *pot, Card community[5], int stage) {
     int highestBet = 0;
     int i;
-    int activePlayers = 0;
-    int rounds = 0;
 
-    /* find current highest bet + active players */
+    int needsAction[MAX_PLAYERS];
+
+    // initialize
     for (i = 0; i < MAX_PLAYERS; i++) {
-        if (!players[i].is_folded && players[i].chips > 0)
-            activePlayers++;
+        if (!players[i].is_folded && players[i].chips > 0) {
+            needsAction[i] = 1;
+        } else {
+            needsAction[i] = 0;
+        }
 
-        if (players[i].current_bet > highestBet)
+        if (players[i].current_bet > highestBet) {
             highestBet = players[i].current_bet;
+        }
     }
 
-    if (activePlayers <= 1) {
-        printf("Not enough players for betting.\n");
-        return highestBet;
-    }
+    int stillActing = 1;
 
-    do {
-        int someoneRaised = 0;
+    while (stillActing) {
+        stillActing = 0;
 
         for (i = 0; i < MAX_PLAYERS; i++) {
 
-            if (players[i].is_folded) {
-                continue;
-            }
-
-            if (players[i].chips <= 0) {
-                continue;
-            }
+            if (!needsAction[i]) continue;
+            if (players[i].is_folded || players[i].chips <= 0) continue;
 
             int bet = 0;
 
@@ -201,27 +197,36 @@ int bettingRound(GamePlayer players[], int *pot, Card community[5], int stage) {
                 bet = aiBet(&players[i], highestBet, community, stage);
             }
 
-            if (bet < 0) {
-                bet = 0;
-            }
+            if (bet < 0) bet = 0;
 
             players[i].chips -= bet;
             players[i].current_bet += bet;
             *pot += bet;
 
+            // if player raised → everyone else must respond again
             if (players[i].current_bet > highestBet) {
                 highestBet = players[i].current_bet;
-                someoneRaised = 1;
+
+                int j;
+                for (j = 0; j < MAX_PLAYERS; j++) {
+                    if (j != i && !players[j].is_folded && players[j].chips > 0) {
+                        needsAction[j] = 1;
+                    }
+                }
+            }
+
+            // this player is done for now
+            needsAction[i] = 0;
+        }
+
+        // check if anyone still needs to act
+        for (i = 0; i < MAX_PLAYERS; i++) {
+            if (needsAction[i]) {
+                stillActing = 1;
+                break;
             }
         }
-
-        rounds++;
-
-        if (!someoneRaised) {
-            break;
-        }
-
-    } while (1);
+    }
 
     printf("\nTotal pot: %d\n", *pot);
     return highestBet;
@@ -270,7 +275,7 @@ void startGame(GamePlayer players[]) {
         }
     }
 
-    showHand(&players[0]);
+    showHand(&players[0], 0);
 
     printf("\n--- Pre-flop ---\n");
     bettingRound(players, &table.pot, table.community, 0);
@@ -307,31 +312,29 @@ void startGame(GamePlayer players[]) {
     bettingRound(players, &table.pot, table.community, 3);
 
     /* simple evaluation: highest card in hand */
-    for (i = 0; i < MAX_PLAYERS; i++) {
-
-        if (players[i].is_folded) {
-            continue;
-        }
-
-        highCard = players[i].hand[0].value;
-        if (players[i].hand[1].value > highCard) {
-            highCard = players[i].hand[1].value;
-        }
-
-        if (highCard > bestScore) {
-            bestScore = highCard;
-            winner = i;
-        }
-    }
+    winner = evaluateHands(players, MAX_PLAYERS, table.community);
 
     if (winner == -1) {
         printf("No winner (all folded)\n");
         return;
     }
 
+    printf("\n--- Players' hand ---\n");
+    for (i = 0; i < MAX_PLAYERS; i++) {
+        if (!players[i].is_folded) {
+            showHand(&players[i], i);
+        }
+    }
+
     printf("\n🏆 Winner is Player %d!\n", winner + 1);
 
     players[winner].chips += table.pot;
+
+    if (winner == 0) {
+        players[0].profile->losses += 1;
+    } else {
+        players[0].profile->losses += 1;
+    }
     
     players[0].profile->total_chips = players[0].chips;
     saveProfile(players[0].profile); 
@@ -554,12 +557,16 @@ int compareHands(HandValue h1, HandValue h2){
 }
 
 /* Prints the player's hand */
-void showHand(GamePlayer *player) {
-    printf("\nYour Hand:\n");
+void showHand(GamePlayer *player, int i) {
+    if (player->is_human) {
+        printf("\nYour Hand:\n");
+    } else {
+        printf("\nPlayer %d hand:\n", i + 1);
+    }
 
-    printf("  [%d%s] [%d%s]\n",
-        player->hand[0].value, getSuitSymbol(player->hand[0].suit),
-        player->hand[1].value, getSuitSymbol(player->hand[1].suit)
+    printf("  [%s%s] [%s%s]\n",
+        getCardValueString(player->hand[0].value), getSuitSymbol(player->hand[0].suit),
+        getCardValueString(player->hand[1].value), getSuitSymbol(player->hand[1].suit)
     );
 }
 
@@ -629,4 +636,18 @@ int evaluateSimpleStrength(Card hand[2], Card community[5], int stage) {
     score += stage * 3;
 
     return score;
+}
+
+const char* getCardValueString(int value) {
+    switch (value) {
+        case 1:  return "A";  // Ace
+        case 11: return "J";
+        case 12: return "Q";
+        case 13: return "K";
+        default: {
+            static char buffer[3];
+            snprintf(buffer, sizeof(buffer), "%d", value);
+            return buffer;
+        }
+    }
 }
