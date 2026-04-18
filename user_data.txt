@@ -1,0 +1,2 @@
+shahams -400 0 2
+shahanstav 10000 0 0

@@ -1,0 +1,25 @@
+/* 
+    File: auth.h
+    Authors: Dharm Barot and Braian Halas
+    Purpose: Header file for auth.c
+    Date: 03/25/2026
+*/
+
+#ifndef AUTH_H
+#define AUTH_H
+
+#define SIZE 50
+
+typedef struct {
+    char username[SIZE];
+    int chips;
+} User;
+
+/* Function prototypes */
+int getAuthType();
+int loginUser();
+int registerUser();
+int usernameExists(const char* str, int len);
+/*User getUserData();*/
+
+#endif
